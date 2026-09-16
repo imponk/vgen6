@@ -26,16 +26,16 @@
     body.light label { color: #374151; }
     body.light .theme-toggle { background: #ffffff; color: #1f2937; border-color: #d1d5db; }
 
-    /* Memuat kedua font: LeagueGothic untuk Judul, Oswald untuk Isi */
+    /* Memuat font: LeagueGothic untuk Judul/Subtitle, OpenSans untuk Isi */
     @font-face {
       font-family: 'LeagueGothic';
       src: url('fonts/LeagueGothic-Regular.ttf') format('truetype');
       font-weight: 400;
     }
     @font-face {
-      font-family: 'Oswald';
-      src: url('fonts/Oswald-VariableFont_wght.ttf') format('truetype');
-      font-weight: 200 700;
+      font-family: 'OpenSans';
+      src: url('fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+      font-weight: 100 900;
     }
 
     body {
@@ -160,8 +160,8 @@
     </div>
 
     <div class="field">
-      <label for="body">Isi (Oswald)</label>
-      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong." style="font-family: 'Oswald', sans-serif;"></textarea>
+      <label for="body">Isi (OpenSans Bold)</label>
+      <textarea id="body" placeholder="Pisah halaman dengan satu baris kosong." style="font-family: 'OpenSans', sans-serif; font-weight: bold;"></textarea>
     </div>
 
     <div class="btn-row">
@@ -220,12 +220,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Kombinasi Font: Judul pakai LeagueGothic, Isi pakai Oswald
+// Kombinasi Font: Judul pakai LeagueGothic, Isi pakai OpenSans Bold
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-// Diperkecil 20% dari 62px menjadi 50px
-const FONT_BODY = "400 50px 'Oswald', sans-serif";
+const FONT_BODY = "700 50px 'OpenSans', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -235,10 +234,8 @@ let titleStaticDuration = TITLE_STATIC_MIN;
 
 const BODY_FADE_IN = 0.3;
 const BODY_WIPE = 0.4;
-// Dipercepat 20%
 const BODY_LINE_DUR = 0.32;
 const PAGE_GAP = 0.6;
-// Dipercepat 20%
 const READING_WORDS_PER_SEC = 3.12;
 
 function setStatus(t) { statusEl.textContent = 'Status: ' + t; }
@@ -312,7 +309,7 @@ function rebuildTitleTexture() {
   titleCanvas.height = LOGICAL_HEIGHT;
   titleCtx = titleCanvas.getContext('2d');
   
-  const centerX = LOGICAL_WIDTH / 2;
+  const marginLeft = titleLayout.marginLeft;
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
@@ -321,13 +318,14 @@ function rebuildTitleTexture() {
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
-  titleCtx.textAlign = 'center'; 
+  // Mengubah teks judul menjadi rata kiri (left alignment)
+  titleCtx.textAlign = 'left'; 
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
 
   if (titleLayout.upperLines.length > 0) {
     titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, centerX, y); y += 42; }
+    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, marginLeft, y); y += 42; }
     y += 60; 
   }
   
@@ -336,7 +334,7 @@ function rebuildTitleTexture() {
     const scale = titleLayout.titleScale || 1;
     for (const line of titleLayout.titleLines) {
       titleCtx.save();
-      titleCtx.translate(centerX, y);
+      titleCtx.translate(marginLeft, y);
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
@@ -348,7 +346,7 @@ function rebuildTitleTexture() {
   if (titleLayout.subtitleLines.length > 0) {
     y += 30; 
     titleCtx.font = FONT_SUBTITLE;
-    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, centerX, y); y += 34; }
+    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, marginLeft, y); y += 34; }
   }
   
   titleTextureReady = true;
@@ -425,7 +423,6 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Jarak antar baris disesuaikan karena ukuran font mengecil (dari 66 menjadi 54)
   const gap = 54;
   const contentHeight = totalUnits * gap;
 
