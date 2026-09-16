@@ -138,11 +138,6 @@
     <small>Edit konten dan record jadi MP4</small>
 
     <div class="field">
-      <label for="upper">Upper (Kategori)</label>
-      <textarea id="upper" placeholder="Contoh: BERITA UTAMA" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
-    </div>
-
-    <div class="field">
       <label for="title">Judul (League Gothic)</label>
       <textarea id="title" placeholder="Judul utama" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
       <select id="titleScale" style="margin-top: 4px; padding: 4px; background: #020617; color: #e5e7eb; border: 1px solid #334155; border-radius: 6px;">
@@ -151,11 +146,6 @@
         <option value="0.85">85%</option>
         <option value="0.8">80%</option>
       </select>
-    </div>
-
-    <div class="field">
-      <label for="subtitle">Subjudul (League Gothic)</label>
-      <textarea id="subtitle" placeholder="Subjudul singkat" style="font-family: 'LeagueGothic', sans-serif;"></textarea>
     </div>
 
     <div class="field">
@@ -189,7 +179,7 @@ const ctx = canvas.getContext('2d');
 
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
-const BLUE_ZONE_BOTTOM = 1200; // Batas bawah area biru
+const BLUE_ZONE_BOTTOM = 1200; 
 
 const SCALE = 1; 
 
@@ -197,10 +187,8 @@ canvas.width = LOGICAL_WIDTH * SCALE;
 canvas.height = LOGICAL_HEIGHT * SCALE;
 ctx.scale(SCALE, SCALE);
 
-const upperEl = document.getElementById('upper');
 const titleEl = document.getElementById('title');
 const titleScaleSelect = document.getElementById('titleScale');
-const subtitleEl = document.getElementById('subtitle');
 const bodyEl = document.getElementById('body');
 
 const previewBtn = document.getElementById('previewBtn');
@@ -219,9 +207,7 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
-const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
 const FONT_BODY = "700 36px 'OpenSans', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
@@ -279,7 +265,7 @@ function estimateLinesForParagraph(text, maxWidth) {
 }
 
 /* ============================================================ */
-let titleLayout = { marginLeft: 200, marginRight: 200, textWidth: 0, upperLines: [], titleLines: [], subtitleLines: [] };
+let titleLayout = { marginLeft: 200, marginRight: 200, textWidth: 0, titleLines: [] };
 let titleCanvas = null, titleCtx = null, titleTextureReady = false;
 
 function rebuildTitleLayout() {
@@ -289,15 +275,11 @@ function rebuildTitleLayout() {
   const titleTextWidth = textWidth / titleScale;
   titleLayout = {
     marginLeft, marginRight, textWidth, titleTextWidth, titleScale,
-    upperLines: wrapText(upperEl.value.trim(), textWidth, FONT_UPPER),
-    titleLines: wrapText(titleEl.value.trim(), titleTextWidth, FONT_TITLE),
-    subtitleLines: wrapText(subtitleEl.value.trim(), textWidth, FONT_SUBTITLE)
+    titleLines: wrapText(titleEl.value.trim(), titleTextWidth, FONT_TITLE)
   };
-  const upperDuration = titleLayout.upperLines.length * 0.4;
   const titleDuration = titleLayout.titleLines.length * 0.6;
-  const subtitleDuration = titleLayout.subtitleLines.length * 0.4;
-  const hasTitle = titleLayout.upperLines.length > 0 || titleLayout.titleLines.length > 0 || titleLayout.subtitleLines.length > 0;
-  titleStaticDuration = hasTitle ? Math.max(TITLE_STATIC_MIN, Math.min(TITLE_STATIC_MAX, upperDuration + titleDuration + subtitleDuration)) : 0;
+  const hasTitle = titleLayout.titleLines.length > 0;
+  titleStaticDuration = hasTitle ? Math.max(TITLE_STATIC_MIN, Math.min(TITLE_STATIC_MAX, titleDuration)) : 0;
   rebuildTitleTexture();
 }
 
@@ -310,23 +292,14 @@ function rebuildTitleTexture() {
   const marginLeft = titleLayout.marginLeft;
 
   let totalHeight = 0;
-  if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 86;
-  if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
-  // Teks judul berakhir tepat di batas bawah area biru
   let y = BLUE_ZONE_BOTTOM - totalHeight + 86;
   
   titleCtx.textAlign = 'left'; 
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
 
-  if (titleLayout.upperLines.length > 0) {
-    titleCtx.font = FONT_UPPER;
-    for (const line of titleLayout.upperLines) { titleCtx.fillText(line, marginLeft, y); y += 42; }
-    y += 60; 
-  }
-  
   if (titleLayout.titleLines.length > 0) {
     titleCtx.font = FONT_TITLE;
     const scale = titleLayout.titleScale || 1;
@@ -338,13 +311,6 @@ function rebuildTitleTexture() {
       titleCtx.restore();
       y += 86; 
     }
-    y -= 20;
-  }
-  
-  if (titleLayout.subtitleLines.length > 0) {
-    y += 30; 
-    titleCtx.font = FONT_SUBTITLE;
-    for (const line of titleLayout.subtitleLines) { titleCtx.fillText(line, marginLeft, y); y += 34; }
   }
   
   titleTextureReady = true;
@@ -422,7 +388,6 @@ function drawBodyPage(pageIndex, t) {
   const gap = 44;
   const contentHeight = totalUnits * gap;
 
-  // Baris terakhir isi berada tepat di atas batas bawah area biru
   let y = BLUE_ZONE_BOTTOM - contentHeight + gap;
 
   for (const raw of lines) {
