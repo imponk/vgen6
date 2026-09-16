@@ -26,7 +26,6 @@
     body.light label { color: #374151; }
     body.light .theme-toggle { background: #ffffff; color: #1f2937; border-color: #d1d5db; }
 
-    /* Memuat font: LeagueGothic untuk Judul/Subtitle, OpenSans untuk Isi */
     @font-face {
       font-family: 'LeagueGothic';
       src: url('fonts/LeagueGothic-Regular.ttf') format('truetype');
@@ -188,9 +187,9 @@ function toggleTheme() {
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
+const BLUE_ZONE_BOTTOM = 1200; // Batas bawah area biru
 
 const SCALE = 1; 
 
@@ -220,7 +219,6 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Kombinasi Font: Judul 96px, Isi diperbesar sedikit ke 36px
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
@@ -316,9 +314,9 @@ function rebuildTitleTexture() {
   if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 86;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
-  let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
+  // Teks judul berakhir tepat di batas bawah area biru
+  let y = BLUE_ZONE_BOTTOM - totalHeight + 86;
   
-  // Teks judul rata kiri (left alignment)
   titleCtx.textAlign = 'left'; 
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
@@ -364,9 +362,7 @@ function drawTitleScene(t) {
   ctx.fillRect(clipWidth, 0, LOGICAL_WIDTH - clipWidth, LOGICAL_HEIGHT);
 }
 
-/* ============================================================
-   REBUILD BODY PAGES
-   ============================================================ */
+/* ============================================================ */
 function rebuildBodyPages() {
   const raw = bodyEl.value.split("\n");
   bodyPages = [];
@@ -423,11 +419,11 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Jarak antar baris disesuaikan untuk font 36px
   const gap = 44;
   const contentHeight = totalUnits * gap;
 
-  let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 330;
+  // Baris terakhir isi berada tepat di atas batas bawah area biru
+  let y = BLUE_ZONE_BOTTOM - contentHeight + gap;
 
   for (const raw of lines) {
     if (!raw.trim()) {
