@@ -220,11 +220,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Kombinasi Font: Judul diperkecil sedikit menjadi 96px, Isi diperkecil separo menjadi 25px
+// Kombinasi Font: Judul 96px, Isi diperbesar sedikit ke 36px
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
 const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "700 25px 'OpenSans', sans-serif";
+const FONT_BODY = "700 36px 'OpenSans', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -423,8 +423,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  // Jarak antar baris disesuaikan untuk font 25px
-  const gap = 32;
+  // Jarak antar baris disesuaikan untuk font 36px
+  const gap = 44;
   const contentHeight = totalUnits * gap;
 
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 330;
