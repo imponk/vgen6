@@ -220,11 +220,11 @@ let targetDuration = 12;
 let bodyPages = [];
 let pageDurations = [];
 
-// Kombinasi Font: Judul pakai LeagueGothic, Isi pakai OpenSans Bold
+// Kombinasi Font: Judul diperkecil sedikit menjadi 96px, Isi diperkecil separo menjadi 25px
 const FONT_UPPER = "400 42px 'LeagueGothic', sans-serif";
-const FONT_TITLE = "400 112px 'LeagueGothic', sans-serif";
+const FONT_TITLE = "400 96px 'LeagueGothic', sans-serif";
 const FONT_SUBTITLE = "400 34px 'LeagueGothic', sans-serif";
-const FONT_BODY = "700 50px 'OpenSans', sans-serif";
+const FONT_BODY = "700 25px 'OpenSans', sans-serif";
 
 const TITLE_PRE_HOLD = 0.3;
 const TITLE_WIPE = 0.8;
@@ -313,12 +313,12 @@ function rebuildTitleTexture() {
 
   let totalHeight = 0;
   if (titleLayout.upperLines.length > 0) totalHeight += titleLayout.upperLines.length * 42 + 60;
-  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 100;
+  if (titleLayout.titleLines.length > 0) totalHeight += titleLayout.titleLines.length * 86;
   if (titleLayout.subtitleLines.length > 0) totalHeight += titleLayout.subtitleLines.length * 34 + 20;
 
   let y = (LOGICAL_HEIGHT - totalHeight) / 2 + 250;
   
-  // Mengubah teks judul menjadi rata kiri (left alignment)
+  // Teks judul rata kiri (left alignment)
   titleCtx.textAlign = 'left'; 
   titleCtx.letterSpacing = "0px"; 
   titleCtx.fillStyle = '#ffffff';
@@ -338,7 +338,7 @@ function rebuildTitleTexture() {
       titleCtx.scale(scale, 1);
       titleCtx.fillText(line, 0, 0); 
       titleCtx.restore();
-      y += 100; 
+      y += 86; 
     }
     y -= 20;
   }
@@ -423,7 +423,8 @@ function drawBodyPage(pageIndex, t) {
     totalUnits += estimateLinesForParagraph(raw, maxWidth);
   }
 
-  const gap = 54;
+  // Jarak antar baris disesuaikan untuk font 25px
+  const gap = 32;
   const contentHeight = totalUnits * gap;
 
   let y = (LOGICAL_HEIGHT - contentHeight) / 2 + 330;
